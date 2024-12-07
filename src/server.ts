@@ -1,9 +1,10 @@
 import express from 'express';
+import { productRouter } from './product';
 
 export const server = express();
 
+server.use('/', productRouter);
 
-server.get('/', (req,res) => {
-        res.send('hola mundo en express');
-})
+
+
 
