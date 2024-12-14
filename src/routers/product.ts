@@ -1,13 +1,16 @@
 import { Router } from "express";
-import { body } from  'express-validator'
-import { createProduct } from "../controllers/product.controller";
+import { body, param } from  'express-validator';
+import { createProduct, deleteProductById, getProductId, getProducts, updateProductById } from "../controllers/product.controller";
 import { handleInputErrors } from "../middlewares";
 
 export const productRouter = Router();
 
-productRouter.get('/', (req,res) => {
-    res.send('hola desde get');
-})
+productRouter.get('/', getProducts);
+
+productRouter.get('/:id', 
+    param('id').isInt().withMessage('ID no valido'),
+    handleInputErrors,
+    getProductId)
 
 productRouter.post('/', 
      //validación
@@ -19,13 +22,18 @@ productRouter.post('/',
       createProduct
 )
 
-productRouter.delete('/', (req,res) => {
-    res.send('hola desde delete');
-})
-productRouter.patch('/', (req,res) => {
-    res.send('hola desde patch');
-})
+productRouter.delete('/id', 
+    param('id').isInt().withMessage('ID no valido'),
+    handleInputErrors,
+    deleteProductById)
 
-productRouter.put('/', (req,res) => {
-    res.send('hola desde put');
-})
+
+productRouter.put('/:id',
+    body('name').notEmpty().withMessage('El Nombre del producto es requerido'),
+    body('price').isNumeric().withMessage('El valor del producto tiene que ser numerico')
+                 .notEmpty().withMessage('El Valor del producto es requerido')
+                 .custom( value => value > 0).withMessage('El valor tiene que ser mayor a cero'),
+    param('id').isInt().withMessage('ID no valido'),
+    handleInputErrors
+    ,updateProductById)
+
